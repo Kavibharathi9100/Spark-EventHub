@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Payment — EventHub{% endblock %}
+{% block content %}
+<div style="max-width:790px;margin:0 auto">
+  <a href="{{ url_for('home') }}" style="display:inline-flex;align-items:center;gap:6px;color:var(--mu);text-decoration:none;font-size:.84rem;margin-bottom:1.2rem">← Events</a>
+  <h1 style="font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;margin-bottom:1.5rem">Complete Payment</h1>
+  <div style="display:grid;grid-template-columns:1fr 280px;gap:1.75rem">
+    <div style="background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:1.75rem" class="ai">
+      <div style="background:linear-gradient(135deg,rgba(255,209,102,.08),rgba(255,107,157,.04));border:1px solid rgba(255,209,102,.22);border-radius:10px;padding:1rem;text-align:center;margin-bottom:1.35rem">
+        <div style="font-size:.69rem;text-transform:uppercase;letter-spacing:1px;color:var(--mu)">Amount to Pay</div>
+        <div style="font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:800;color:var(--gold)">₹{{r.fee|int}}</div>
+        <div style="font-size:.8rem;color:var(--mu);margin-top:2px">{{r.ev_name}}</div>
+      </div>
+      <ol style="list-style:none;counter-reset:s">
+        {% for step in ['Open any UPI app (GPay, PhonePe, Paytm, BHIM)','Scan the QR code on the right','Enter amount: ₹'+r.fee|int|string,'Add note: '+r.reg_id,'Complete and note your Transaction ID','Enter TXN ID below and click Confirm'] %}
+        <li style="counter-increment:s;display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--bd);font-size:.83rem;color:var(--mu){% if loop.last %};border-bottom:none{% endif %}">
+          <span style="min-width:20px;height:20px;background:var(--p);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0">{{loop.index}}</span>{{step|safe}}
+        </li>{% endfor %}
+      </ol>
+      <form method="POST" style="margin-top:1.2rem;background:rgba(255,209,102,.05);border:1px solid rgba(255,209,102,.2);border-radius:9px;padding:1rem">
+        <label class="lbl" style="color:var(--gold)">🔖 UPI Transaction ID</label>
+        <input type="text" name="txn" class="fc" placeholder="e.g. 412345678901" required>
+        <div style="font-size:.71rem;color:var(--di);margin:5px 0 10px">Find in your UPI app → Transaction History</div>
+        <button type="submit" class="btn btn-a" style="width:100%;justify-content:center;padding:12px">✓ Confirm Payment &amp; Complete Registration</button>
+      </form>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:1.4rem;text-align:center;position:sticky;top:78px;height:fit-content" class="ai" style="animation-delay:.1s">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:3px">📱 Scan to Pay</div>
+      <div style="font-size:.73rem;color:var(--mu);margin-bottom:.7rem">UPI QR Code</div>
+      <div style="background:#fff;border-radius:9px;padding:9px;display:inline-block;margin-bottom:.8rem"><img src="data:image/png;base64,{{qr}}" width="160" height="160" alt="UPI QR"></div>
+      <div style="background:rgba(255,255,255,.05);border-radius:7px;padding:7px 11px;font-family:monospace;font-size:.77rem;margin-bottom:.9rem">{{r.upi}}</div>
+      <div style="border-top:1px solid var(--bd);padding-top:.8rem;text-align:left">
+        <div style="color:var(--di);font-size:.7rem;margin-bottom:2px">Reg ID</div>
+        <div style="font-family:monospace;color:var(--p);font-size:.8rem;margin-bottom:.6rem">{{r.reg_id}}</div>
+        <div style="color:var(--di);font-size:.7rem;margin-bottom:2px">Name</div>
+        <div style="font-size:.84rem;font-weight:600">{{r.full_name}}</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

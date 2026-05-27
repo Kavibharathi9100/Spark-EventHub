@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{('Edit' if mode=='edit' else 'New')}} Event — Admin{% endblock %}
+{% block content %}
+<div style="max-width:800px;margin:0 auto">
+  <a href="{{ url_for('admin_dash') }}" style="display:inline-flex;align-items:center;gap:6px;color:var(--mu);text-decoration:none;font-size:.84rem;margin-bottom:1.2rem">← Dashboard</a>
+  <h1 style="font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;margin-bottom:1.65rem">{{('✏️ Edit Event' if mode=='edit' else '➕ Create New Event')}}</h1>
+  {% if err %}<div class="al al-e">⚠️ {{err}}</div>{% endif %}
+  <div style="background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:1.75rem" class="ai">
+    <form method="POST">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.77rem;color:var(--p);text-transform:uppercase;letter-spacing:1px;margin-bottom:.95rem;padding-bottom:.6rem;border-bottom:1px solid var(--bd)">📋 Basic Info</div>
+      <div class="fg"><label class="lbl">Event Name <span class="req">*</span></label><input type="text" name="name" class="fc" required value="{{ev.name if ev else ''}}"></div>
+      <div class="fg"><label class="lbl">Description</label><textarea name="desc" class="fc" rows="3">{{ev.description if ev else ''}}</textarea></div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.77rem;color:var(--p);text-transform:uppercase;letter-spacing:1px;margin:1.1rem 0 .95rem;padding-bottom:.6rem;border-bottom:1px solid var(--bd)">📅 Schedule</div>
+      <div class="g2">
+        <div class="fg">
+          <label class="lbl">Event Date <span class="req">*</span> <span style="font-size:.66rem;color:var(--di)">(today or future only)</span></label>
+          <input type="date" name="date" id="df" class="fc" min="{{today}}" required value="{{ev.date if ev else ''}}">
+          <div id="dh" style="font-size:.7rem;margin-top:4px;color:var(--di)">Select today or a future date</div>
+        </div>
+        <div class="fg"><label class="lbl">Time <span class="req">*</span></label><input type="text" name="time" class="fc" placeholder="09:00 AM" required value="{{ev.time if ev else ''}}"></div>
+      </div>
+      <div class="fg"><label class="lbl">Venue <span class="req">*</span></label><input type="text" name="venue" class="fc" required value="{{ev.venue if ev else ''}}"></div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.77rem;color:var(--p);text-transform:uppercase;letter-spacing:1px;margin:1.1rem 0 .95rem;padding-bottom:.6rem;border-bottom:1px solid var(--bd)">🎤 Speakers</div>
+      <div class="g2">
+        <div class="fg"><label class="lbl">Host <span class="req">*</span></label><input type="text" name="host" class="fc" required value="{{ev.host if ev else ''}}"></div>
+        <div class="fg"><label class="lbl">Co-Host</label><input type="text" name="co_host" class="fc" value="{{ev.co_host if ev else ''}}"></div>
+      </div>
+      <div class="g2">
+        <div class="fg"><label class="lbl">Organizer <span class="req">*</span></label><input type="text" name="organizer" class="fc" required value="{{ev.organizer if ev else ''}}"></div>
+        <div class="fg"><label class="lbl">Category</label><select name="category" class="fc">{% for c in cats %}<option value="{{c}}" {% if ev and ev.category==c %}selected{% endif %}>{{c}}</option>{% endfor %}</select></div>
+      </div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.77rem;color:var(--p);text-transform:uppercase;letter-spacing:1px;margin:1.1rem 0 .95rem;padding-bottom:.6rem;border-bottom:1px solid var(--bd)">⚙️ Settings</div>
+      <div class="g2">
+        <div class="fg"><label class="lbl">Type</label><select name="is_paid" id="ip" class="fc" onchange="document.getElementById('pf').style.display=this.value=='1'?'block':'none'"><option value="0" {% if not ev or not ev.is_paid %}selected{% endif %}>🆓 Free</option><option value="1" {% if ev and ev.is_paid %}selected{% endif %}>💳 Paid</option></select></div>
+        <div class="fg"><label class="lbl">Capacity</label><input type="number" name="capacity" class="fc" min="1" value="{{ev.capacity if ev else '200'}}"></div>
+      </div>
+      <div id="pf" style="display:{% if ev and ev.is_paid %}block{% else %}none{% endif %};background:rgba(255,209,102,.05);border:1px solid rgba(255,209,102,.2);border-radius:9px;padding:1rem;margin-bottom:.9rem">
+        <div class="g2"><div class="fg" style="margin:0"><label class="lbl">Fee (₹)</label><input type="number" name="fee" class="fc" min="0" value="{{ev.fee if ev else '0'}}"></div><div class="fg" style="margin:0"><label class="lbl">UPI ID</label><input type="text" name="upi" class="fc" placeholder="org@upi" value="{{ev.upi if ev else ''}}"></div></div>
+      </div>
+      <div class="fg"><label class="lbl">Status</label><select name="status" class="fc"><option value="upcoming" {% if not ev or ev.status=='upcoming' %}selected{% endif %}>📅 Upcoming</option><option value="ongoing" {% if ev and ev.status=='ongoing' %}selected{% endif %}>🟢 Ongoing / Today</option></select></div>
+      <div style="display:flex;gap:.8rem;margin-top:1.4rem;flex-wrap:wrap">
+        <button type="submit" class="btn btn-p" style="flex:1;justify-content:center;padding:12px">{{('✏️ Save' if mode=='edit' else '➕ Create Event')}}</button>
+        <a href="{{ url_for('admin_dash') }}" class="btn btn-o">Cancel</a>
+        {% if mode=='edit' %}<form method="POST" action="{{ url_for('admin_delete',eid=ev.id) }}" onsubmit="return confirm('Delete permanently?')" style="margin:0"><button type="submit" class="btn btn-d">🗑 Delete</button></form>{% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+const td='{{today}}';
+document.getElementById('df').addEventListener('change',function(){
+  const h=document.getElementById('dh');
+  if(this.value>=td){h.textContent='✓ Valid date';h.style.color='var(--gr)'}
+  else{h.textContent='✗ Must be today or future';h.style.color='var(--acc)'}
+});
+</script>
+{% endblock %}

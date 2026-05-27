@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}EventHub — Live Event Board{% endblock %}
+{% block head %}
+<style>
+.hero{padding:3rem 0 2rem;text-align:center}
+.chip{display:inline-flex;align-items:center;gap:7px;background:rgba(124,106,255,.1);border:1px solid rgba(124,106,255,.25);border-radius:20px;padding:5px 16px;font-size:.7rem;font-weight:700;color:var(--p);letter-spacing:1px;text-transform:uppercase;margin-bottom:1.2rem}
+.dot{width:7px;height:7px;background:var(--gr);border-radius:50%;animation:pulse 2s infinite}
+h1.ht{font-family:'Syne',sans-serif;font-size:clamp(2rem,5.5vw,3.7rem);font-weight:800;line-height:1.1;margin-bottom:.7rem}
+.grad{background:linear-gradient(135deg,#7c6aff,#ff6b9d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hs{color:var(--mu);font-size:1rem;max-width:440px;margin:0 auto 2.2rem;line-height:1.75}
+.stats{display:flex;justify-content:center;gap:2.2rem;margin-bottom:2.5rem;flex-wrap:wrap}
+.sv{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800}
+.sl{font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--di);margin-top:2px}
+.sd{width:1px;height:36px;background:var(--bd);align-self:center}
+/* Filter */
+.fbar{background:var(--card);border:1px solid var(--bd);border-radius:13px;padding:1rem 1.2rem;margin-bottom:1.75rem;display:flex;gap:.8rem;align-items:center;flex-wrap:wrap}
+.sw{flex:1;min-width:190px;position:relative}
+.si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--di)}
+.si2{width:100%;padding:9px 13px 9px 36px;background:var(--inp);border:1.5px solid var(--bd);border-radius:8px;color:var(--tx);font-family:'Inter',sans-serif;font-size:.85rem;outline:none;transition:all .2s}
+.si2:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(124,106,255,.12)}
+.si2::placeholder{color:var(--di)}
+.fsel{padding:9px 12px;background:var(--inp);border:1.5px solid var(--bd);border-radius:8px;color:var(--tx);font-family:'Inter',sans-serif;font-size:.85rem;outline:none;cursor:pointer}
+.pills{display:flex;gap:5px;flex-wrap:wrap}
+.pill{padding:5px 13px;border-radius:16px;font-size:.74rem;font-weight:600;cursor:pointer;border:1.5px solid var(--bd);background:transparent;color:var(--mu);text-decoration:none;transition:all .2s}
+.pill:hover,.pill.on{background:var(--p);color:#fff;border-color:var(--p)}
+/* Grid */
+.ev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(335px,1fr));gap:1.2rem}
+/* Feature 6: Event card with image banner */
+.ev-card{background:var(--card);border:1px solid var(--bd);border-radius:15px;overflow:hidden;text-decoration:none;color:inherit;display:block;transition:all .3s;position:relative}
+.ev-card:hover{border-color:var(--bd2);transform:translateY(-5px);box-shadow:0 20px 38px var(--sh)}
+.ev-banner{height:155px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.ev-bg{position:absolute;inset:0}
+.ev-ov{position:absolute;inset:0;background:rgba(0,0,0,.28)}
+.ev-cnt{position:relative;z-index:2;text-align:center}
+.ev-em{font-size:3.8rem;filter:drop-shadow(0 4px 12px rgba(0,0,0,.38));display:block;margin-bottom:4px}
+.ev-cc{display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.18);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3);border-radius:11px;padding:3px 10px;font-size:.68rem;font-weight:700;color:#fff;letter-spacing:.5px;text-transform:uppercase}
+.ribbon{position:absolute;top:11px;right:-5px;background:var(--gr);color:#000;font-size:.64rem;font-weight:800;padding:3px 13px 3px 9px;letter-spacing:.4px;clip-path:polygon(0 0,100% 0,100% 100%,0 100%,8% 50%);z-index:3}
+.paid-tag{position:absolute;top:11px;left:11px;background:rgba(255,209,102,.88);color:#000;font-size:.64rem;font-weight:800;padding:3px 8px;border-radius:9px;z-index:3}
+.ev-body{padding:1.05rem}
+.ev-title{font-family:'Syne',sans-serif;font-size:1.02rem;font-weight:700;margin-bottom:.6rem;line-height:1.35}
+.ev-rows{display:flex;flex-direction:column;gap:4px;margin-bottom:.8rem}
+.ev-row{display:flex;align-items:center;gap:7px;font-size:.79rem;color:var(--mu)}
+.ic{width:15px;text-align:center;opacity:.7;font-size:.82rem}
+.ev-foot{padding:.85rem 1.05rem;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.ev-price{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800}
+.fc-p{color:var(--gr)}.pc-p{color:var(--gold)}
+.ev-cta{display:inline-flex;align-items:center;gap:4px;padding:7px 16px;background:var(--p);color:#fff;border-radius:7px;font-size:.79rem;font-weight:600;transition:all .2s}
+.ev-cta:hover{background:var(--p2)}
+.empty{text-align:center;padding:5rem 2rem;grid-column:1/-1}
+.bhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.btitle{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:8px}
+</style>
+{% endblock %}
+{% block content %}
+<div class="hero ai">
+  <div class="chip"><div class="dot"></div>Live Event Board</div>
+  <h1 class="ht">Discover &amp; Join<br><span class="grad">Amazing Events</span></h1>
+  <p class="hs">Register, attend on the event day, complete tasks, and earn verified digital certificates.</p>
+</div>
+<div class="stats ai" style="animation-delay:.08s">
+  <div><div class="sv">{{stats.total}}</div><div class="sl">Events</div></div>
+  <div class="sd"></div>
+  <div><div class="sv" style="color:var(--gr)">{{stats.ongoing}}</div><div class="sl">Live Now</div></div>
+  <div class="sd"></div>
+  <div><div class="sv" style="color:var(--p)">{{stats.upcoming}}</div><div class="sl">Upcoming</div></div>
+</div>
+<form method="get" class="fbar ai" style="animation-delay:.12s">
+  <div class="sw"><span class="si">🔍</span><input type="text" name="q" class="si2" placeholder="Search events, venues, organizers…" value="{{q}}"></div>
+  <div class="pills">
+    <a href="?" class="pill {% if not sel_st %}on{% endif %}">All</a>
+    <a href="?st=ongoing{% if q %}&q={{q}}{% endif %}" class="pill {% if sel_st=='ongoing' %}on{% endif %}">🟢 Live</a>
+    <a href="?st=upcoming{% if q %}&q={{q}}{% endif %}" class="pill {% if sel_st=='upcoming' %}on{% endif %}">📅 Upcoming</a>
+  </div>
+  <select name="cat" class="fsel" onchange="this.form.submit()">
+    <option value="">All Categories</option>
+    {% for c in cats %}<option value="{{c.category}}" {% if sel_cat==c.category %}selected{% endif %}>{{c.category}}</option>{% endfor %}
+  </select>
+  <button type="submit" class="btn btn-p btn-sm">Search</button>
+</form>
+<div class="bhead">
+  <div class="btitle"><div class="dot"></div>Notice Board <span style="font-size:.8rem;color:var(--di);font-weight:400;margin-left:4px">({{events|length}} events)</span></div>
+</div>
+<div class="ev-grid">
+{% if not events %}<div class="empty"><div style="font-size:3.5rem;margin-bottom:1rem">🔍</div><h3 style="font-family:'Syne',sans-serif;margin-bottom:.4rem">No events found</h3><p style="color:var(--mu)">Try a different search term.</p></div>{% endif %}
+{% for ev in events %}{% set t=themes.get(ev.category,themes['General']) %}
+<a href="{{ url_for('event_detail',eid=ev.id) }}" class="ev-card ai" style="animation-delay:{{ (loop.index0 * 0.04)|round(2) }}s">
+  <div class="ev-banner">
+    <div class="ev-bg" style="background:linear-gradient(135deg,{{t.grad}})"></div>
+    <div class="ev-ov"></div>
+    {% if ev.status=='ongoing' %}<div class="ribbon">LIVE NOW</div>{% endif %}
+    {% if ev.is_paid %}<div class="paid-tag">💳 ₹{{ev.fee|int}}</div>{% endif %}
+    <div class="ev-cnt"><span class="ev-em">{{t.icon}}</span><span class="ev-cc">{{ev.category}}</span></div>
+  </div>
+  <div class="ev-body">
+    <div class="ev-title">{{ev.name}}</div>
+    <div class="ev-rows">
+      <div class="ev-row"><span class="ic">📅</span><span>{{ev.date}} · {{ev.time}}</span></div>
+      <div class="ev-row"><span class="ic">📍</span><span>{{ev.venue}}</span></div>
+      <div class="ev-row"><span class="ic">🎤</span><span><strong>{{ev.host}}</strong>{% if ev.co_host %} &amp; {{ev.co_host}}{% endif %}</span></div>
+      <div class="ev-row"><span class="ic">🏢</span><span>{{ev.organizer}}</span></div>
+    </div>
+  </div>
+  <div class="ev-foot">
+    <div class="ev-price {% if ev.is_paid %}pc-p{% else %}fc-p{% endif %}">{% if ev.is_paid %}₹{{ev.fee|int}}{% else %}FREE{% endif %}</div>
+    <div style="display:flex;align-items:center;gap:7px">
+      {% if ev.status=='ongoing' %}<span class="bdg bg">● Live</span>{% else %}<span class="bdg bp">Upcoming</span>{% endif %}
+      <span class="ev-cta">Register →</span>
+    </div>
+  </div>
+</a>
+{% endfor %}
+</div>
+{% endblock %}

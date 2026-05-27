@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Registered! — EventHub{% endblock %}
+{% block content %}
+<div style="max-width:540px;margin:3.5rem auto;text-align:center" class="ai">
+  <div style="width:86px;height:86px;background:linear-gradient(135deg,{{theme.grad}});border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.6rem;margin:0 auto 1.65rem;box-shadow:0 0 34px rgba(0,212,170,.35)">✓</div>
+  <h1 style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin-bottom:.6rem">You're Registered!</h1>
+  <p style="color:var(--mu);line-height:1.75">Welcome, <strong>{{reg.full_name}}</strong>! Your spot at <strong>{{ev.name}}</strong> is confirmed. Check your Gmail for the confirmation email.</p>
+  <div style="background:rgba(124,106,255,.08);border:1px solid rgba(124,106,255,.24);border-radius:11px;padding:1.1rem 2rem;margin:1.65rem auto;display:inline-block">
+    <div style="font-size:.67rem;text-transform:uppercase;letter-spacing:1px;color:var(--di);margin-bottom:3px">Your Registration ID</div>
+    <div style="font-family:monospace;font-size:1.5rem;font-weight:700;color:var(--p)">{{reg.reg_id}}</div>
+    <div style="font-size:.7rem;color:var(--di);margin-top:3px">Save this — needed on event day</div>
+  </div>
+  <div style="background:var(--card);border:1px solid var(--bd);border-radius:13px;padding:1.25rem;text-align:left;margin-bottom:1.4rem">
+    <div style="font-family:'Syne',sans-serif;font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--mu);margin-bottom:.8rem">What's Next?</div>
+    {% for n,s in [('1','Check Gmail for confirmation email'),('2','Save your Reg ID: '+reg.reg_id),('3','📅 On '+ev.date+' — attendance form opens on the event day only'),('4','Submit attendance + complete tasks → instant certificate')] %}
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd);font-size:.84rem{% if loop.last %};border-bottom:none{% endif %}">
+      <div style="min-width:22px;height:22px;background:var(--p);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0">{{n}}</div><span>{{s}}</span>
+    </div>{% endfor %}
+  </div>
+  <div style="display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap">
+    <a href="{{ url_for('home') }}" class="btn btn-o">← Browse Events</a>
+    <a href="{{ url_for('my_tickets') }}" class="btn btn-o">My Tickets</a>
+    <a href="{{ url_for('attendance') }}" class="btn btn-p">Attendance →</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Admin Login — EventHub{% endblock %}
+{% block content %}
+<div style="min-height:calc(100vh - 180px);display:flex;align-items:center;justify-content:center;padding:2rem">
+  <div style="width:100%;max-width:395px;background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:2.2rem" class="ai">
+    <div style="text-align:center;margin-bottom:1.75rem">
+      <div style="width:66px;height:66px;background:linear-gradient(135deg,#7c6aff,#ff6b9d);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto .85rem;box-shadow:0 7px 20px rgba(124,106,255,.35)">🔐</div>
+      <div style="font-family:'Syne',sans-serif;font-size:1.45rem;font-weight:800">Admin Panel</div>
+      <div style="font-size:.8rem;color:var(--mu);margin-top:3px">EventHub Management System</div>
+    </div>
+    {% if err %}<div class="al al-e">⚠️ {{err}}</div>{% endif %}
+    <form method="POST">
+      <div class="fg">
+        <label class="lbl">Username</label>
+        <div style="position:relative"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.92rem">👤</span>
+        <input type="text" name="u" class="fc" style="padding-left:36px" placeholder="Admin username" autocomplete="username" required></div>
+      </div>
+      <div class="fg">
+        <label class="lbl">Password</label>
+        <!-- Feature 3: Password show/hide eye icon -->
+        <div class="pw-wrap">
+          <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.92rem;z-index:1">🔑</span>
+          <input type="password" name="p" id="apw" class="fc" style="padding-left:36px" placeholder="Admin password" autocomplete="current-password" required>
+          <button type="button" class="eye-btn" onclick="togglePwd('apw',this)" title="Show/Hide Password">👁</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-p" style="width:100%;justify-content:center;padding:12px;margin-top:.2rem">🔐 Sign In</button>
+    </form>
+    <div style="background:rgba(124,106,255,.07);border:1px solid var(--bd);border-radius:8px;padding:.85rem;font-size:.75rem;color:var(--mu);margin-top:1rem;line-height:1.75">
+      🔒 Default: <strong style="color:var(--p)">admin</strong> / <strong style="color:var(--p)">Admin@2025</strong><br>
+      Set ADMIN_USER &amp; ADMIN_PASS env vars in production.
+    </div>
+    <div style="text-align:center;margin-top:1rem"><a href="{{ url_for('home') }}" style="font-size:.8rem;color:var(--mu);text-decoration:none">← Back to Events</a></div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Register – {{ev.name}}{% endblock %}
+{% block head %}<style>
+.rl{display:grid;grid-template-columns:1fr 300px;gap:1.75rem;max-width:940px;margin:0 auto}
+.fc-card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:1.75rem}
+.st{font-family:'Syne',sans-serif;font-weight:700;font-size:.79rem;color:var(--p);text-transform:uppercase;letter-spacing:1px;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid var(--bd)}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+.sumcard{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:1.2rem;position:sticky;top:78px;height:fit-content}
+.sumb{height:105px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:2.9rem;margin-bottom:1rem}
+.sumn{font-family:'Syne',sans-serif;font-weight:700;font-size:.93rem;margin-bottom:.85rem;line-height:1.35}
+.sumr{display:flex;gap:8px;font-size:.78rem;color:var(--mu);margin-bottom:6px}
+#eh{font-size:.71rem;margin-top:4px;color:var(--di);transition:color .2s}
+@media(max-width:900px){.rl{grid-template-columns:1fr}.fr2{grid-template-columns:1fr}.sumcard{position:static}}
+</style>{% endblock %}
+{% block content %}
+<div style="max-width:940px;margin:0 auto">
+<a href="{{ url_for('event_detail',eid=ev.id) }}" style="display:inline-flex;align-items:center;gap:6px;color:var(--mu);text-decoration:none;font-size:.84rem;margin-bottom:1.2rem">← Back to Event</a>
+<h1 style="font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;margin-bottom:1.5rem">Event Registration</h1>
+</div>
+<div class="rl">
+  <div class="fc-card ai">
+    {% if err %}<div class="al al-e">⚠️ {{err}}</div>{% endif %}
+    <form method="POST">
+      <div class="st">👤 Personal Information</div>
+      <div class="fr2">
+        <div class="fg"><label class="lbl">Full Name <span class="req">*</span></label><input type="text" name="full_name" class="fc" placeholder="Your full name" required></div>
+        <div class="fg"><label class="lbl">Gmail Address <span class="req">*</span></label><input type="email" name="email" id="ef" class="fc" placeholder="yourname@gmail.com" required><div id="eh">Only @gmail.com accepted</div></div>
+      </div>
+      <div class="fr2">
+        <div class="fg"><label class="lbl">Phone <span class="req">*</span></label><input type="tel" name="phone" class="fc" placeholder="10-digit number" maxlength="10" required></div>
+        <div class="fg"><label class="lbl">Year</label><select name="year" class="fc"><option value="">Select year</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option><option>PG / Research</option><option>Working Professional</option></select></div>
+      </div>
+      <div class="st" style="margin-top:.5rem">🏫 Academic Details</div>
+      <div class="fg"><label class="lbl">College / Institution</label><input type="text" name="college" class="fc" placeholder="Your college name"></div>
+      <div class="fg"><label class="lbl">Department</label><input type="text" name="dept" class="fc" placeholder="e.g. Computer Science, MBA"></div>
+      <button type="submit" class="btn {% if ev.is_paid %}btn-a{% else %}btn-g{% endif %}" style="width:100%;justify-content:center;font-size:.93rem;padding:12px;margin-top:.4rem">
+        {% if ev.is_paid %}Continue to Payment →{% else %}✓ Complete Registration{% endif %}
+      </button>
+      <p style="font-size:.72rem;color:var(--di);text-align:center;margin-top:.7rem">📧 Confirmation email sent to your Gmail</p>
+    </form>
+  </div>
+  <div class="sumcard ai" style="animation-delay:.1s">
+    <div class="sumb" style="background:linear-gradient(135deg,{{theme.grad}})"><span>{{theme.icon}}</span></div>
+    <div class="sumn">{{ev.name}}</div>
+    <div class="sumr"><span>📅</span><span>{{ev.date}} · {{ev.time}}</span></div>
+    <div class="sumr"><span>📍</span><span>{{ev.venue}}</span></div>
+    <div class="sumr"><span>🎤</span><span>{{ev.host}}{% if ev.co_host %} &amp; {{ev.co_host}}{% endif %}</span></div>
+    <div style="margin-top:.9rem;padding-top:.9rem;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:.78rem;color:var(--mu)">Fee</span>
+      <span style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:{% if ev.is_paid %}var(--gold){% else %}var(--gr){% endif %}">{% if ev.is_paid %}₹{{ev.fee|int}}{% else %}FREE{% endif %}</span>
+    </div>
+  </div>
+</div>
+<script>
+const ef=document.getElementById('ef'),eh=document.getElementById('eh');
+ef.addEventListener('input',function(){
+  if(/^[\w._%+-]+@gmail\.com$/.test(this.value)){eh.textContent='✓ Valid Gmail';eh.style.color='var(--gr)'}
+  else if(this.value.includes('@')){eh.textContent='⚠ Only @gmail.com';eh.style.color='var(--acc)'}
+  else{eh.textContent='Only @gmail.com accepted';eh.style.color='var(--di)'}
+});
+</script>
+{% endblock %}

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}EventHub{% endblock %}</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ══ THEME VARIABLES ══ */
+[data-theme="dark"]{
+  --bg:#07070f;--bg2:#0d0d1a;--card:#0f0f22;--card2:#141435;
+  --p:#7c6aff;--p2:#a29bfe;--acc:#ff6b9d;--gr:#00d4aa;--gold:#ffd166;
+  --tx:#e8e6f0;--mu:#8a879f;--di:#4a475a;
+  --bd:rgba(124,106,255,.15);--bd2:rgba(124,106,255,.35);
+  --nav:rgba(7,7,15,.9);--inp:rgba(255,255,255,.05);--sh:rgba(0,0,0,.5);
+}
+[data-theme="light"]{
+  --bg:#f5f4ff;--bg2:#ece9ff;--card:#fff;--card2:#f8f7ff;
+  --p:#6c5ce7;--p2:#a29bfe;--acc:#e84393;--gr:#00b894;--gold:#e17055;
+  --tx:#1a1830;--mu:#5a5675;--di:#9b98b5;
+  --bd:rgba(108,92,231,.15);--bd2:rgba(108,92,231,.35);
+  --nav:rgba(245,244,255,.95);--inp:rgba(108,92,231,.05);--sh:rgba(108,92,231,.12);
+}
+*,::before,::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% -10%,rgba(124,106,255,.07),transparent 60%),radial-gradient(ellipse 60% 40% at 80% 110%,rgba(0,212,170,.04),transparent 60%);pointer-events:none;z-index:0}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;background:var(--nav);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd);padding:0 1.5rem;transition:background .3s}
+.nav-inner{max-width:1360px;margin:auto;display:flex;align-items:center;justify-content:space-between;height:62px;gap:1rem}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.28rem;color:var(--tx);text-decoration:none;display:flex;align-items:center;gap:8px}
+.lm{width:32px;height:32px;background:linear-gradient(135deg,#7c6aff,#ff6b9d);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.nl{display:flex;align-items:center;gap:2px;list-style:none;flex-wrap:wrap}
+.nl a{color:var(--mu);text-decoration:none;font-size:.82rem;font-weight:500;padding:6px 12px;border-radius:8px;transition:all .2s;white-space:nowrap}
+.nl a:hover,.nl a.on{color:var(--tx);background:rgba(124,106,255,.1)}
+.np{background:var(--p)!important;color:#fff!important;padding:6px 16px!important;border-radius:18px!important}
+.np:hover{background:var(--p2)!important}
+
+/* Theme toggle */
+.tw{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.ticon{font-size:.82rem}
+.tbtn{width:42px;height:22px;border-radius:11px;background:rgba(124,106,255,.2);border:1px solid var(--bd2);cursor:pointer;display:flex;align-items:center;padding:2px;transition:all .3s}
+.tbtn:hover{background:rgba(124,106,255,.35)}
+.tknob{width:16px;height:16px;border-radius:50%;background:var(--p);transition:transform .3s;font-size:.55rem;display:flex;align-items:center;justify-content:center}
+[data-theme="light"] .tknob{transform:translateX(20px)}
+
+/* Flashes */
+.flashes{max-width:1360px;margin:.6rem auto;padding:0 1.5rem;position:relative;z-index:10}
+.fl{padding:10px 15px;border-radius:9px;font-size:.86rem;margin-bottom:6px;display:flex;align-items:center;gap:8px;animation:fadeUp .3s ease}
+.fl-success{background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);color:#00d4aa}
+.fl-error{background:rgba(255,107,157,.1);border:1px solid rgba(255,107,157,.3);color:#ff9ec0}
+
+/* Main */
+main{max-width:1360px;margin:0 auto;padding:1.75rem 1.5rem;position:relative;z-index:1}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 22px;border-radius:10px;font-family:'Inter',sans-serif;font-size:.87rem;font-weight:600;cursor:pointer;transition:all .2s;border:none;text-decoration:none}
+.btn-p{background:linear-gradient(135deg,#7c6aff,#a855f7);color:#fff;box-shadow:0 4px 16px rgba(124,106,255,.35)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(124,106,255,.48)}
+.btn-o{background:transparent;color:var(--p);border:1.5px solid var(--bd2)}
+.btn-o:hover{background:rgba(124,106,255,.08)}
+.btn-g{background:linear-gradient(135deg,#00d4aa,#00b894);color:#fff;box-shadow:0 4px 14px rgba(0,212,170,.32)}
+.btn-g:hover{transform:translateY(-2px)}
+.btn-a{background:linear-gradient(135deg,#ff6b9d,#ff8fab);color:#fff;box-shadow:0 4px 14px rgba(255,107,157,.32)}
+.btn-a:hover{transform:translateY(-2px)}
+.btn-d{background:linear-gradient(135deg,#ff4757,#ff6b81);color:#fff}
+.btn-gold{background:linear-gradient(135deg,#ffd166,#e17055);color:#fff}
+.btn-sm{padding:6px 14px;font-size:.78rem}
+.btn-xs{padding:4px 10px;font-size:.73rem}
+
+/* Card */
+.card{background:var(--card);border:1px solid var(--bd);border-radius:15px;transition:all .3s}
+.card:hover{border-color:var(--bd2)}
+
+/* Badges */
+.bdg{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:16px;font-size:.68rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+.bp{background:rgba(124,106,255,.12);color:var(--p);border:1px solid rgba(124,106,255,.22)}
+.bg{background:rgba(0,212,170,.1);color:var(--gr);border:1px solid rgba(0,212,170,.2)}
+.ba{background:rgba(255,107,157,.1);color:var(--acc);border:1px solid rgba(255,107,157,.2)}
+.bgold{background:rgba(255,209,102,.1);color:var(--gold);border:1px solid rgba(255,209,102,.2)}
+.bdim{background:rgba(255,255,255,.06);color:var(--mu);border:1px solid rgba(255,255,255,.1)}
+[data-theme="light"] .bdim{background:rgba(0,0,0,.05);border-color:rgba(0,0,0,.1)}
+
+/* Forms */
+.fg{margin-bottom:1rem}
+.lbl{display:block;font-size:.79rem;font-weight:600;color:var(--mu);margin-bottom:5px}
+.req{color:var(--acc);margin-left:2px}
+.fc{width:100%;padding:10px 14px;background:var(--inp);border:1.5px solid var(--bd);border-radius:9px;color:var(--tx);font-family:'Inter',sans-serif;font-size:.89rem;transition:all .2s;outline:none}
+.fc:focus{border-color:var(--p);background:rgba(124,106,255,.07);box-shadow:0 0 0 3px rgba(124,106,255,.12)}
+.fc::placeholder{color:var(--di)}
+select.fc option{background:var(--bg2);color:var(--tx)}
+textarea.fc{resize:vertical;min-height:85px}
+
+/* Feature 3: Password toggle */
+.pw-wrap{position:relative}
+.pw-wrap .fc{padding-right:42px}
+.eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--mu);font-size:.95rem;transition:color .2s;line-height:1}
+.eye-btn:hover{color:var(--p)}
+
+/* Alerts */
+.al{padding:11px 15px;border-radius:9px;font-size:.86rem;margin-bottom:1.1rem;display:flex;align-items:flex-start;gap:8px}
+.al-e{background:rgba(255,107,157,.08);border:1px solid rgba(255,107,157,.25);color:#ff9ec0}
+.al-s{background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.25);color:#5fffda}
+.al-w{background:rgba(255,209,102,.08);border:1px solid rgba(255,209,102,.25);color:var(--gold)}
+.al-i{background:rgba(124,106,255,.08);border:1px solid rgba(124,106,255,.22);color:var(--p2)}
+
+/* Grid */
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem}
+@media(max-width:900px){.g3{grid-template-columns:repeat(2,1fr)}.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr}main{padding:1rem}}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(124,106,255,.4)}50%{box-shadow:0 0 0 8px rgba(124,106,255,0)}}
+.ai{animation:fadeUp .42s ease forwards}
+
+.divider{height:1px;background:var(--bd);margin:1.4rem 0}
+footer{border-top:1px solid var(--bd);padding:1.5rem;text-align:center;color:var(--di);font-size:.78rem;margin-top:3.5rem;position:relative;z-index:1}
+</style>
+{% block head %}{% endblock %}
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a href="{{ url_for('home') }}" class="logo"><div class="lm">⚡</div>EventHub</a>
+    <ul class="nl">
+      <li><a href="{{ url_for('home') }}">Events</a></li>
+      <li><a href="{{ url_for('attendance') }}">Attendance</a></li>
+      <li><a href="{{ url_for('my_tickets') }}">My Tickets</a></li>
+      <li><a href="{{ url_for('verify') }}">Verify Cert</a></li>
+      {% if session.get('admin') %}
+        <li><a href="{{ url_for('admin_dash') }}">Admin</a></li>
+        <li><a href="{{ url_for('admin_logout') }}" style="color:var(--acc)!important">Logout</a></li>
+      {% else %}
+        <li><a href="{{ url_for('admin_login') }}">Admin</a></li>
+      {% endif %}
+      <li><a href="{{ url_for('home') }}" class="np">Explore →</a></li>
+    </ul>
+    <div class="tw">
+      <span class="ticon" id="ti">🌙</span>
+      <button class="tbtn" onclick="toggleTheme()" title="Toggle Light/Dark Mode"><div class="tknob" id="tk">🌙</div></button>
+    </div>
+  </div>
+</nav>
+
+{% with msgs=get_flashed_messages(with_categories=true) %}{% if msgs %}
+<div class="flashes">{% for cat,msg in msgs %}<div class="fl fl-{{cat}}">{% if cat=='success'%}✅{%else%}⚠️{%endif%} {{msg}}</div>{% endfor %}</div>
+{% endif %}{% endwith %}
+
+<main>{% block content %}{% endblock %}</main>
+
+<footer>
+  <p>⚡ <strong>EventHub</strong> — Advanced Event Management System</p>
+  <p style="margin-top:4px">Python · Flask · SQLite · ReportLab · Gmail SMTP</p>
+</footer>
+
+<script>
+/* Theme toggle */
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  const ico=t==='light'?'☀️':'🌙';
+  document.getElementById('tk').textContent=ico;
+  document.getElementById('ti').textContent=ico;
+}
+function toggleTheme(){
+  const c=document.documentElement.getAttribute('data-theme')||'dark';
+  const n=c==='dark'?'light':'dark';
+  localStorage.setItem('eh_theme',n); applyTheme(n);
+}
+(function(){ applyTheme(localStorage.getItem('eh_theme')||'dark'); })();
+
+/* Feature 3: Password show/hide */
+function togglePwd(id,btn){
+  const f=document.getElementById(id);
+  const show=f.type==='password';
+  f.type=show?'text':'password';
+  btn.textContent=show?'🙈':'👁';
+  btn.title=show?'Hide password':'Show password';
+}
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

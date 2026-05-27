@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Verify Certificate — EventHub{% endblock %}
+{% block content %}
+<div style="max-width:600px;margin:2rem auto">
+  <div style="text-align:center;margin-bottom:1.65rem" class="ai"><h1 style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800">🛡 Certificate Verification</h1><p style="color:var(--mu);margin-top:.35rem">Enter a Certificate ID to verify authenticity instantly.</p></div>
+  <form method="GET" style="display:flex;gap:.8rem;margin-bottom:1.65rem" class="ai" style="animation-delay:.06s">
+    <input type="text" name="cid" class="fc" style="flex:1;font-family:monospace" placeholder="e.g. CERT-A1B2C3D4E5" value="{{cid}}">
+    <button type="submit" class="btn btn-p" style="white-space:nowrap">🔍 Verify</button>
+  </form>
+  {% if res=='nf' %}
+  <div style="background:var(--card);border:1px solid rgba(255,107,157,.35);border-radius:13px;padding:2rem;text-align:center" class="ai">
+    <div style="width:63px;height:63px;background:rgba(255,107,157,.12);border:2px solid var(--acc);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.7rem;margin:0 auto .8rem">✗</div>
+    <h2 style="font-family:'Syne',sans-serif;color:var(--acc);margin-bottom:.45rem">Not Found</h2>
+    <p style="color:var(--mu)">No certificate with ID <strong style="font-family:monospace">{{cid}}</strong> found.</p>
+  </div>
+  {% elif res and res!='nf' %}
+  <div style="background:var(--card);border:1px solid rgba(0,212,170,.35);border-radius:13px;padding:2rem" class="ai">
+    <div style="text-align:center;margin-bottom:1.25rem">
+      <div style="width:63px;height:63px;background:rgba(0,212,170,.12);border:2px solid var(--gr);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.7rem;margin:0 auto .8rem">✓</div>
+      <h2 style="font-family:'Syne',sans-serif;color:var(--gr)">Certificate Verified ✓</h2>
+      <p style="color:var(--mu);font-size:.82rem;margin-top:3px">Valid, authentic EventHub certificate.</p>
+    </div>
+    {% for lb,vl,mn in [('🏆 Cert ID',res.cert_id,True),('👤 Issued To',res.holder,False),('🎫 Event',res.ev_name,False),('🏢 Organizer',res.organizer,False),('📅 Event Date',res.date,False),('📆 Issued On',res.issued_at[:10],False)] %}
+    <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd);font-size:.86rem{% if loop.last %};border-bottom:none{% endif %}">
+      <span style="color:var(--di);width:125px;flex-shrink:0">{{lb}}</span>
+      <span style="font-weight:600{% if mn %};font-family:monospace;color:var(--p){% endif %}">{{vl}}</span>
+    </div>{% endfor %}
+    <div style="margin-top:1rem;padding:.8rem;background:rgba(0,212,170,.06);border-radius:8px;text-align:center;font-size:.75rem;color:var(--mu)">🔒 Verified at eventhub.app/verify?cid={{res.cert_id}}</div>
+  </div>
+  {% else %}
+  <div style="background:var(--card);border:1px solid var(--bd);border-radius:13px;padding:1.4rem;text-align:center" class="ai" style="animation-delay:.1s">
+    <div style="font-size:2.4rem;margin-bottom:.8rem">🛡️</div>
+    <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:.45rem">How It Works</h3>
+    <p style="color:var(--mu);font-size:.85rem;line-height:1.7">Each certificate has a unique ID like <code style="background:rgba(255,255,255,.08);padding:2px 7px;border-radius:4px">CERT-A1B2C3D4E5</code>. Enter it above to verify the holder, event, and date instantly.</p>
+  </div>{% endif %}
+</div>
+{% endblock %}

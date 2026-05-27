@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Feedback — EventHub{% endblock %}
+{% block content %}
+<div style="max-width:580px;margin:2rem auto">
+  <a href="{{ url_for('home') }}" style="display:inline-flex;align-items:center;gap:6px;color:var(--mu);text-decoration:none;font-size:.84rem;margin-bottom:1.4rem">← Back</a>
+  <h1 style="font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:800;margin-bottom:.35rem">⭐ Leave Feedback</h1>
+  <p style="color:var(--mu);margin-bottom:1.35rem">Help us make future events better.</p>
+  <div style="background:rgba(124,106,255,.06);border:1px solid var(--bd);border-radius:9px;padding:.85rem 1.05rem;margin-bottom:1.25rem;display:flex;gap:10px;align-items:center">
+    <span style="font-size:1.85rem">🎫</span>
+    <div><div style="font-family:'Syne',sans-serif;font-weight:700">{{ev.name}}</div><div style="font-size:.77rem;color:var(--mu)">{{ev.date}} · {{ev.venue}}</div></div>
+  </div>
+  {% if ex %}
+  <div style="background:var(--card);border:1px solid var(--bd);border-radius:13px;padding:2rem;text-align:center"><div style="font-size:3rem;margin-bottom:.8rem">⭐</div><h3 style="font-family:'Syne',sans-serif;margin-bottom:.45rem">Already Submitted</h3><p style="color:var(--mu)">You gave <strong style="color:var(--gold)">{{ex.rating}}/5 stars</strong>. Thank you!</p></div>
+  {% else %}
+  <div style="background:var(--card);border:1px solid var(--bd);border-radius:13px;padding:1.65rem" class="ai">
+    <form method="POST">
+      <div class="fg"><label class="lbl">Rating <span class="req">*</span></label>
+        <div style="display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:4px;margin-bottom:4px">
+          {% for i in range(5,0,-1) %}<input type="radio" name="rating" id="s{{i}}" value="{{i}}" {% if i==5 %}checked{% endif %} style="display:none"><label for="s{{i}}" style="font-size:2rem;cursor:pointer;color:var(--di);transition:all .15s">★</label>{% endfor %}
+        </div>
+      </div>
+      <div class="fg"><label class="lbl">Comment</label><textarea name="comment" class="fc" rows="4" placeholder="What did you enjoy? What could be improved?"></textarea></div>
+      <button type="submit" class="btn btn-p" style="width:100%;justify-content:center;padding:12px;margin-top:.4rem">⭐ Submit Feedback</button>
+    </form>
+  </div>{% endif %}
+</div>
+{% endblock %}

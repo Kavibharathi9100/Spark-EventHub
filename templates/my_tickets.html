@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}My Tickets — EventHub{% endblock %}
+{% block content %}
+<div style="max-width:790px;margin:0 auto">
+  <div class="ai" style="margin-bottom:1.65rem"><h1 style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800">🎫 My Registrations</h1><p style="color:var(--mu);margin-top:.3rem">View tickets, attendance status, and certificates.</p></div>
+  <form method="POST" style="display:flex;gap:.8rem;margin-bottom:1.75rem;background:var(--card);border:1px solid var(--bd);border-radius:13px;padding:1.15rem;flex-wrap:wrap" class="ai" style="animation-delay:.06s">
+    {% if err %}<div class="al al-e" style="width:100%">⚠️ {{err}}</div>{% endif %}
+    <div class="fg" style="flex:1;min-width:210px;margin:0"><label class="lbl">Your Gmail Address</label><input type="email" name="email" class="fc" placeholder="yourname@gmail.com" value="{{email or ''}}" required></div>
+    <div style="display:flex;align-items:flex-end"><button type="submit" class="btn btn-p" style="height:42px;padding:0 22px">🔍 Find Tickets</button></div>
+  </form>
+  {% if results is not none %}
+    {% if results %}
+    <p style="font-size:.83rem;color:var(--mu);margin-bottom:.8rem">Found <strong style="color:var(--tx)">{{results|length}}</strong> registration(s) for <strong style="color:var(--p)">{{email}}</strong></p>
+    {% for r in results %}
+    <div style="background:var(--card);border:1px solid var(--bd);border-radius:13px;overflow:hidden;margin-bottom:.85rem" class="ai" style="animation-delay:{{ (loop.index0 * 0.04)|round(2) }}s">
+      <div style="display:flex;gap:.9rem;padding:1.05rem;align-items:center;flex-wrap:wrap">
+        <div style="width:42px;height:42px;border-radius:9px;background:linear-gradient(135deg,{{r.theme.grad}});display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0">{{r.theme.icon}}</div>
+        <div style="flex:1"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.94rem;margin-bottom:2px">{{r.ev_name}}</div><div style="font-size:.76rem;color:var(--mu)">📅 {{r.date}} · 📍 {{r.venue}}</div><div style="margin-top:4px"><span style="font-family:monospace;font-size:.71rem;color:var(--p);background:rgba(124,106,255,.1);border:1px solid rgba(124,106,255,.2);padding:2px 8px;border-radius:5px">{{r.reg_id}}</span></div></div>
+        <div>{% if r.reg_type=='free' %}<span class="bdg bg">✓ Free</span>{% elif r.pay_status=='completed' %}<span class="bdg bgold">💳 Paid</span>{% else %}<span class="bdg ba">⏳ Pending</span>{% endif %}</div>
+      </div>
+      <div style="border-top:1px solid var(--bd);padding:.7rem 1.05rem;background:rgba(255,255,255,.015);display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+        {% if r.att %}<span style="font-size:.71rem;font-weight:600;padding:3px 8px;border-radius:16px;background:rgba(0,212,170,.1);color:var(--gr);border:1px solid rgba(0,212,170,.2)">✓ Attended</span>{% if r.att.task_completed %}<span style="font-size:.71rem;font-weight:600;padding:3px 8px;border-radius:16px;background:rgba(0,212,170,.1);color:var(--gr);border:1px solid rgba(0,212,170,.2)">✓ Task Done</span>{% endif %}{% endif %}
+        {% if r.cert %}<span style="font-size:.71rem;font-weight:600;padding:3px 8px;border-radius:16px;background:rgba(255,209,102,.1);color:var(--gold);border:1px solid rgba(255,209,102,.2)">🏆 Cert</span>{% endif %}
+        <div style="margin-left:auto;display:flex;gap:.4rem">
+          {% if r.pay_status=='pending' %}<a href="{{ url_for('payment',rid=r.reg_id) }}" class="btn btn-gold btn-xs">💳 Pay</a>{% endif %}
+          {% if r.cert %}<a href="{{ url_for('certificate',rid=r.reg_id) }}" class="btn btn-gold btn-xs">🏆 Cert</a>{% endif %}
+          <a href="{{ url_for('attendance') }}?rid={{r.reg_id}}" class="btn btn-p btn-xs">📋 Att</a>
+          <a href="{{ url_for('feedback',rid=r.reg_id) }}" class="btn btn-o btn-xs">⭐</a>
+        </div>
+      </div>
+    </div>{% endfor %}
+    {% else %}
+    <div style="text-align:center;padding:3rem" class="ai"><div style="font-size:3rem;margin-bottom:.8rem">🎫</div><h3 style="font-family:'Syne',sans-serif;margin-bottom:.35rem">No registrations found</h3><p style="color:var(--mu)">No events registered with {{email}}</p><a href="{{ url_for('home') }}" class="btn btn-p" style="margin-top:1.2rem">Browse Events →</a></div>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

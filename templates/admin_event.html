@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ev.name}} — Admin{% endblock %}
+{% block content %}
+<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.65rem">
+  <div><a href="{{ url_for('admin_dash') }}" style="font-size:.82rem;color:var(--mu);text-decoration:none">← Dashboard</a>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:.45rem">
+      <div style="width:40px;height:40px;border-radius:9px;background:linear-gradient(135deg,{{theme.grad}});display:flex;align-items:center;justify-content:center;font-size:1.45rem;flex-shrink:0">{{theme.icon}}</div>
+      <h1 style="font-family:'Syne',sans-serif;font-size:1.55rem;font-weight:800">{{ev.name}}</h1>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:.55rem;flex-wrap:wrap"><span class="bdg bp">{{ev.category}}</span><span class="bdg bdim">{{ev.date}}</span>{% if ev.is_paid %}<span class="bdg bgold">₹{{ev.fee|int}}</span>{% else %}<span class="bdg bg">Free</span>{% endif %}{% if ev.status=='ongoing' %}<span class="bdg bg">● Live</span>{% else %}<span class="bdg bdim">Upcoming</span>{% endif %}</div>
+  </div>
+  <div style="display:flex;gap:.6rem"><a href="{{ url_for('admin_edit',eid=ev.id) }}" class="btn btn-o btn-sm">✏️ Edit</a><form method="POST" action="{{ url_for('admin_delete',eid=ev.id) }}" onsubmit="return confirm('Delete?')" style="margin:0"><button type="submit" class="btn btn-d btn-sm">🗑</button></form></div>
+</div>
+<div class="g3" style="margin-bottom:1.65rem">
+  {% for v,l,c in [(regs|length,'Total Registrations','var(--p)'),(att|length,'Attendance','var(--gr)'),((regs|selectattr('pay_status','equalto','completed')|list|length),'Paid Confirmed','var(--gold)')] %}
+  <div style="background:var(--card);border:1px solid var(--bd);border-radius:13px;padding:1.05rem;text-align:center"><div style="font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;color:{{c}}">{{v}}</div><div style="font-size:.67rem;text-transform:uppercase;letter-spacing:1px;color:var(--di);margin-top:2px">{{l}}</div></div>
+  {% endfor %}
+</div>
+<div style="display:flex;gap:4px;background:rgba(255,255,255,.04);border-radius:9px;padding:3px;width:fit-content;margin-bottom:1.2rem">
+  {% for tid,tlbl in [('rg','Registrations ('+regs|length|string+')'),('at','Attendance ('+att|length|string+')')] %}
+  <button class="tab-btn" onclick="showTab('{{tid}}')" id="tb-{{tid}}" style="padding:6px 16px;border-radius:7px;border:none;background:{%if tid=='rg'%}var(--p){%else%}transparent{%endif%};color:{%if tid=='rg'%}#fff{%else%}var(--mu){%endif%};cursor:pointer;font-family:'Inter',sans-serif;font-size:.81rem;font-weight:500;transition:all .2s">{{tlbl}}</button>
+  {% endfor %}
+</div>
+<div style="background:var(--card);border:1px solid var(--bd);border-radius:14px;overflow:hidden">
+  <div id="tab-rg"><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
+    <thead><tr>{% for h in ['Reg ID','Name','Email','Phone','Type','Payment','Registered'] %}<th style="padding:8px 12px;font-size:.64rem;text-transform:uppercase;letter-spacing:1px;color:var(--di);border-bottom:1px solid var(--bd);text-align:left;background:rgba(255,255,255,.02)">{{h}}</th>{% endfor %}</tr></thead>
+    <tbody>{% for r in regs %}<tr>
+      <td style="padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><span style="font-family:monospace;font-size:.75rem;color:var(--p)">{{r.reg_id}}</span></td>
+      <td style="padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-weight:600;font-size:.84rem">{{r.full_name}}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--mu);font-size:.81rem">{{r.email}}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--mu);font-size:.81rem">{{r.phone}}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><span class="bdg {% if r.reg_type=='paid' %}bgold{% else %}bg{% endif %}">{{r.reg_type}}</span></td>
+      <td style="padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04)">{% if r.pay_status=='completed' %}<span class="bdg bg">✓ Paid</span>{% elif r.pay_status=='pending' %}<span class="bdg ba">Pending</span>{% else %}<span class="bdg bdim">N/A</span>{% endif %}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--di);font-size:.74rem">{{r.reg_at[:16]}}</td>
+    </tr>{% endfor %}{% if not regs %}<tr><td colspan="7" style="padding:2.5rem;text-align:center;color:var(--di)">No registrations yet.</td></tr>{% endif %}</tbody>
+  </table></div></div>
+  <div id="tab-at" style="display:none"><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
+    <thead><tr>{% for h in ['Reg ID','Name','Email','Phone','Task Done','Eligible','Time'] %}<th style="padding:8px 12px;font-size:.64rem;text-transform:uppercase;letter-spacing:1px;color:var(--di);border-bottom:1px solid var(--bd);text-align:left;background:rgba(255,255,255,.02)">{{h}}</th>{% endfor %}</tr></thead>
+    <tbody>{% for a in att %}<tr>
+      <td style="padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04)"><span style="font-family:monospace;font-size:.75rem;color:var(--p)">{{a.reg_id}}</span></td>
+      <td style="padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-weight:600;font-size:.84rem">{{a.full_name}}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--mu);font-size:.81rem">{{a.email}}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--mu);font-size:.81rem">{{a.phone}}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04)">{% if a.task_completed %}<span class="bdg bg">✓ Done</span>{% else %}<span class="bdg bdim">Pending</span>{% endif %}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04)">{% if a.eligible %}<span class="bdg bgold">🏆 Yes</span>{% else %}<span class="bdg bdim">No</span>{% endif %}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--di);font-size:.74rem">{{a.att_time[:16] if a.att_time else '—'}}</td>
+    </tr>{% endfor %}{% if not att %}<tr><td colspan="7" style="padding:2.5rem;text-align:center;color:var(--di)">No attendance records yet.</td></tr>{% endif %}</tbody>
+  </table></div></div>
+</div>
+<script>function showTab(t){document.querySelectorAll('[id^=tab-]').forEach(p=>p.style.display='none');document.getElementById('tab-'+t).style.display='block';document.querySelectorAll('.tab-btn').forEach(b=>{b.style.background='transparent';b.style.color='var(--mu)'});document.getElementById('tb-'+t).style.background='var(--p)';document.getElementById('tb-'+t).style.color='#fff'}</script>
+{% endblock %}

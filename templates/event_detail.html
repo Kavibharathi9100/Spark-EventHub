@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ev.name}} — EventHub{% endblock %}
+{% block head %}<style>
+.layout{display:grid;grid-template-columns:1fr 330px;gap:2rem}
+.banner{height:200px;border-radius:13px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:1.25rem}
+.banner-bg{position:absolute;inset:0}
+.banner-em{font-size:4.8rem;position:relative;z-index:1;filter:drop-shadow(0 6px 14px rgba(0,0,0,.38))}
+h1.et{font-family:'Syne',sans-serif;font-size:1.85rem;font-weight:800;margin:.8rem 0;line-height:1.2}
+.desc{color:var(--mu);line-height:1.8;margin-bottom:1.3rem}
+.ig{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem}
+.ib{background:rgba(255,255,255,.03);border:1px solid var(--bd);border-radius:9px;padding:.85rem}
+.ib-l{font-size:.67rem;text-transform:uppercase;letter-spacing:1px;color:var(--di);margin-bottom:2px}
+.ib-v{font-weight:600;font-size:.87rem}
+.sc{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:1.25rem;position:sticky;top:78px;height:fit-content}
+.price{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800}
+.sbar-w{margin:.9rem 0}
+.sbar-l{display:flex;justify-content:space-between;font-size:.75rem;color:var(--mu);margin-bottom:5px}
+.sbar{height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.sf{height:100%;border-radius:3px}
+.dr{display:flex;gap:9px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:.83rem}
+.dr:last-child{border-bottom:none}
+.dk{color:var(--di);width:65px;flex-shrink:0;font-size:.76rem}
+.dv{font-weight:500}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sc{position:static}}
+</style>{% endblock %}
+{% block content %}
+<a href="{{ url_for('home') }}" style="display:inline-flex;align-items:center;gap:6px;color:var(--mu);text-decoration:none;font-size:.84rem;margin-bottom:1.25rem">← Back to Events</a>
+<div class="layout">
+  <div class="ai">
+    <div class="banner"><div class="banner-bg" style="background:linear-gradient(135deg,{{theme.grad}})"></div><div style="position:absolute;inset:0;background:rgba(0,0,0,.2)"></div><span class="banner-em">{{theme.icon}}</span></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <span class="bdg bp">{{ev.category}}</span>
+      {% if ev.status=='ongoing' %}<span class="bdg bg">● Live</span>{% else %}<span class="bdg bdim">Upcoming</span>{% endif %}
+      {% if ev.is_paid %}<span class="bdg bgold">💳 Paid</span>{% else %}<span class="bdg bg">✓ Free</span>{% endif %}
+    </div>
+    <h1 class="et">{{ev.name}}</h1>
+    <p class="desc">{{ev.description}}</p>
+    <div class="ig">
+      <div class="ib"><div class="ib-l">🎤 Host</div><div class="ib-v">{{ev.host}}</div></div>
+      {% if ev.co_host %}<div class="ib"><div class="ib-l">🎙 Co-Host</div><div class="ib-v">{{ev.co_host}}</div></div>{% endif %}
+      <div class="ib"><div class="ib-l">🏢 Organizer</div><div class="ib-v">{{ev.organizer}}</div></div>
+      <div class="ib"><div class="ib-l">👥 Capacity</div><div class="ib-v">{{ev.capacity}} seats</div></div>
+    </div>
+  </div>
+  <div class="ai" style="animation-delay:.1s">
+    <div class="sc">
+      <div style="font-size:.67rem;text-transform:uppercase;letter-spacing:1px;color:var(--di);margin-bottom:3px">Registration Fee</div>
+      <div class="price {% if ev.is_paid %}pc-p{% else %}fc-p{% endif %}">{% if ev.is_paid %}₹{{ev.fee|int}}{% else %}FREE{% endif %}</div>
+      {% set pct=((ev.capacity-spots)/ev.capacity*100)|int %}
+      <div class="sbar-w">
+        <div class="sbar-l"><span>{{rc}} registered</span><span style="color:{% if spots<20 %}var(--acc){% else %}var(--mu){% endif %}">{{spots}} left</span></div>
+        <div class="sbar"><div class="sf" style="width:{{pct}}%;background:linear-gradient(90deg,{{theme.grad}})"></div></div>
+      </div>
+      <div class="dr"><span class="dk">📅 Date</span><span class="dv">{{ev.date}}</span></div>
+      <div class="dr"><span class="dk">🕐 Time</span><span class="dv">{{ev.time}}</span></div>
+      <div class="dr"><span class="dk">📍 Venue</span><span class="dv">{{ev.venue}}</span></div>
+      <div style="margin-top:1.2rem">
+        {% if spots>0 %}<a href="{{ url_for('register',eid=ev.id) }}" class="btn {% if ev.is_paid %}btn-a{% else %}btn-g{% endif %}" style="width:100%;justify-content:center;padding:13px">{% if ev.is_paid %}💳 Register &amp; Pay{% else %}✓ Register Free{% endif %}</a>
+        {% else %}<div style="text-align:center;padding:12px;background:rgba(255,255,255,.04);border-radius:8px;color:var(--di)">🚫 Registration Full</div>{% endif %}
+      </div>
+      <div style="margin-top:.85rem;padding:.8rem;background:rgba(124,106,255,.07);border-radius:8px;border:1px solid var(--bd);font-size:.77rem;color:var(--mu)">🏆 Earn a <strong style="color:var(--p)">digital certificate</strong> by attending on event day and completing all tasks.</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Certificate — EventHub{% endblock %}
+{% block content %}
+<div style="max-width:700px;margin:2rem auto">
+{% if err %}
+  <div style="text-align:center;padding:4rem 2rem" class="ai">
+    <div style="font-size:3.4rem;margin-bottom:.95rem">🔒</div>
+    <h2 style="font-family:'Syne',sans-serif;font-size:1.42rem;margin-bottom:.6rem">Not Eligible Yet</h2>
+    <p style="color:var(--mu);margin-bottom:1.4rem">{{err}}</p>
+    <a href="{{ url_for('attendance') }}" class="btn btn-p">Mark Attendance →</a>
+  </div>
+{% else %}
+  <div style="text-align:center;margin-bottom:1.65rem" class="ai">
+    <h1 style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:.35rem">🏆 Your Certificate</h1>
+    <p style="color:var(--mu)">Congratulations on completing {{ev.name}}!</p>
+  </div>
+
+  <!-- Certificate Preview Card -->
+  <div style="background:linear-gradient(135deg,#0d0820,#12102a,#0d1820);border:2px solid rgba(124,106,255,.42);border-radius:18px;padding:2.65rem;text-align:center;position:relative;overflow:hidden;margin-bottom:1.4rem" class="ai">
+    <div style="position:absolute;top:13px;left:13px;width:52px;height:52px;border-top:2px solid var(--p);border-left:2px solid var(--p);border-radius:4px 0 0 0"></div>
+    <div style="position:absolute;top:13px;right:13px;width:52px;height:52px;border-top:2px solid var(--p);border-right:2px solid var(--p);border-radius:0 4px 0 0"></div>
+    <div style="position:absolute;bottom:13px;left:13px;width:52px;height:52px;border-bottom:2px solid var(--p);border-left:2px solid var(--p);border-radius:0 0 0 4px"></div>
+    <div style="position:absolute;bottom:13px;right:13px;width:52px;height:52px;border-bottom:2px solid var(--p);border-right:2px solid var(--p);border-radius:0 0 4px 0"></div>
+    
+    <div style="width:72px;height:72px;background:linear-gradient(135deg,{{theme.grad}});border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.4rem;margin:0 auto 1.25rem;box-shadow:0 0 28px rgba(124,106,255,.42)">🏆</div>
+    
+    <div style="font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--p);margin-bottom:.35rem">EventHub Official</div>
+    <div style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:1.2rem;color:#e8e6f0">Certificate of Participation</div>
+    
+    <div style="color:#8a879f;margin-bottom:.3rem;font-size:.93rem">This is to certify that</div>
+    <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;background:linear-gradient(135deg,{{theme.grad}});-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:.3rem 0 1rem">{{reg.full_name}}</div>
+    
+    <div style="color:#8a879f;margin-bottom:.3rem">has successfully participated in</div>
+    <div style="font-family:'Syne',sans-serif;font-size:1.08rem;font-weight:700;color:var(--p);margin-bottom:.3rem">{{ev.name}}</div>
+    <div style="color:#8a879f;font-size:.88rem">held on {{ev.date}} &nbsp;·&nbsp; Organized by {{ev.organizer}}</div>
+    
+    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(124,106,255,.4),transparent);margin:1.2rem 0"></div>
+    <div style="font-size:.71rem;color:#4a475a">Certificate ID: <strong style="color:var(--p);font-family:monospace">{{cid}}</strong></div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div style="display:flex;gap:.85rem;justify-content:center;flex-wrap:wrap" class="ai">
+    <!-- Download Button -->
+    <a href="{{ url_for('download_certificate', rid=reg.reg_id) }}" 
+       class="btn btn-p" style="padding:12px 24px;">
+        ⬇ Download PDF Certificate
+    </a>
+    
+    <!-- Direct Base64 Download (Backup) -->
+    <a href="data:application/pdf;base64,{{pdf_b64}}" 
+       download="Certificate_{{reg.full_name|replace(' ','_')}}.pdf" 
+       class="btn btn-o">
+        ⬇ Alternative Download
+    </a>
+    
+    <a href="{{ url_for('verify') }}?cid={{cid}}" class="btn btn-o">🛡 Verify Certificate</a>
+    <a href="{{ url_for('home') }}" class="btn btn-o">Browse Events</a>
+  </div>
+
+  <div style="margin-top:1.5rem;padding:.85rem;background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.2);border-radius:9px;text-align:center;font-size:.77rem;color:var(--mu)">
+    📧 Certificate has also been sent to <strong>{{reg.email}}</strong>
+  </div>
+{% endif %}
+</div>
+{% endblock %}

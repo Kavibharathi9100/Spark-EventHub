@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Analytics — EventHub{% endblock %}
+{% block head %}<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>{% endblock %}
+{% block content %}
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.65rem">
+  <div><a href="{{ url_for('admin_dash') }}" style="font-size:.82rem;color:var(--mu);text-decoration:none">← Dashboard</a><h1 style="font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:800;margin-top:4px">📊 Analytics</h1></div>
+</div>
+<div class="g4" style="margin-bottom:1.65rem">
+  {% for v,l,c in [(tot_reg,'Total Regs','var(--p)'),('₹'+tot_rev|int|string,'Revenue','var(--gold)'),(att_d|sum(attribute='att')|int,'Attendees','var(--gr)'),(att_d|sum(attribute='certs')|int,'Certs','var(--acc)')] %}
+  <div style="background:var(--card);border:1px solid var(--bd);border-radius:13px;padding:1.05rem"><div style="font-family:'Syne',sans-serif;font-size:1.65rem;font-weight:800;color:{{c}}">{{v}}</div><div style="font-size:.66rem;text-transform:uppercase;letter-spacing:1px;color:var(--di);margin-top:2px">{{l}}</div></div>
+  {% endfor %}
+</div>
+<div class="g2" style="margin-bottom:1.25rem">
+  <div style="background:var(--card);border:1px solid var(--bd);border-radius:13px;padding:1.25rem"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.9rem">Registrations by Event</div><canvas id="c1" height="200"></canvas></div>
+  <div style="background:var(--card);border:1px solid var(--bd);border-radius:13px;padding:1.25rem"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.9rem">Category Breakdown</div><canvas id="c2" height="200"></canvas></div>
+</div>
+<div class="g2">
+  <div style="background:var(--card);border:1px solid var(--bd);border-radius:13px;padding:1.25rem"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.9rem">Daily Registrations (14 days)</div><canvas id="c3" height="200"></canvas></div>
+  <div style="background:var(--card);border:1px solid var(--bd);border-radius:13px;padding:1.25rem"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.9rem">Revenue by Event</div><canvas id="c4" height="200"></canvas></div>
+</div>
+<script>
+Chart.defaults.color='#8a879f';Chart.defaults.font.family="'Inter',sans-serif";
+const gr='rgba(255,255,255,.06)';
+const rd={{reg_d|tojson}},cd={{cat_d|tojson}},dd=[...{{day_d|tojson}}].reverse(),rv={{rev_d|tojson}};
+new Chart(document.getElementById('c1'),{type:'bar',data:{labels:rd.map(d=>d.name.substring(0,17)),datasets:[{label:'Total',data:rd.map(d=>d.total),backgroundColor:'rgba(124,106,255,.7)',borderRadius:4}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{color:gr},ticks:{precision:0}},y:{grid:{display:false}}}}});
+new Chart(document.getElementById('c2'),{type:'doughnut',data:{labels:cd.map(d=>d.category),datasets:[{data:cd.map(d=>d.cnt),backgroundColor:['#7c6aff','#ff6b9d','#00d4aa','#ffd166','#ff9a5c','#82cfff','#a29bfe'],borderWidth:2,borderColor:'#0f0f22',hoverOffset:6}]},options:{cutout:'64%',plugins:{legend:{position:'right',labels:{boxWidth:10,padding:12}}}}});
+new Chart(document.getElementById('c3'),{type:'line',data:{labels:dd.map(d=>d.day?d.day.slice(5):''),datasets:[{label:'Registrations',data:dd.map(d=>d.cnt),borderColor:'#7c6aff',backgroundColor:'rgba(124,106,255,.12)',fill:true,tension:.4,pointBackgroundColor:'#7c6aff',pointRadius:4}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{color:gr}},y:{grid:{color:gr},ticks:{precision:0},beginAtZero:true}}}});
+new Chart(document.getElementById('c4'),{type:'bar',data:{labels:rv.map(d=>d.name.substring(0,15)),datasets:[{label:'₹ Revenue',data:rv.map(d=>d.rev),backgroundColor:'rgba(255,209,102,.75)',borderRadius:5}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:gr},beginAtZero:true,ticks:{callback:v=>'₹'+v.toLocaleString('en-IN')}}}}});
+</script>
+{% endblock %}
