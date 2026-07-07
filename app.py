@@ -885,13 +885,16 @@ def admin_analytics():
     return render_template('analytics.html', reg_d=reg_d, rev_d=rev_d, cat_d=cat_d,
         day_d=day_d, att_d=att_d, tot_rev=tot_rev, tot_reg=tot_reg)
 
-if __name__ == '__main__':
-    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-    init_db()
-    threading.Thread(target=scheduler, daemon=True).start()
-    print("\n🚀 EventHub is running!")
-    print("   → http://localhost:5000")
-    print("   → Admin: http://localhost:5000/admin/login")
-    print("   → Credentials: admin / Admin@2025")
-    print("   → Email: set SMTP_USER and SMTP_PASS env vars\n")
-    app.run(debug=True, port=5000)
+os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+   init_db()
+   threading.Thread(target=scheduler, daemon=True).start()
+
+   if __name__ == '__main__':
+       port = int(os.environ.get('PORT', 5000))
+       debug_mode = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+       print("\n🚀 EventHub is running!")
+       print(f"   → http://localhost:{port}")
+       print(f"   → Admin: http://localhost:{port}/admin/login")
+       print("   → Credentials: admin / (set via ADMIN_PASS env var)")
+       print("   → Email: set SMTP_USER and SMTP_PASS env vars\n")
+       app.run(host='0.0.0.0', debug=debug_mode, port=port)
